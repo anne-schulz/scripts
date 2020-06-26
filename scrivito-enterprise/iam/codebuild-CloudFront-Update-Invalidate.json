@@ -1,0 +1,42 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": [
+                "cloudfront:CreateInvalidation",
+                "cloudfront:GetDistribution",
+                "cloudfront:GetInvalidation",
+                "cloudfront:UpdateDistribution"
+            ],
+            "Effect": "Allow",
+            "Resource": [
+                "arn:aws:cloudfront::${account_id}:distribution/${cfd_id_stg}",
+                "arn:aws:cloudfront::${account_id}:distribution/${cfd_id}"
+            ]
+        },
+        {
+            "Action": [
+                "lambda:EnableReplication*"
+            ],
+            "Effect": "Allow",
+            "Resource": [
+                "arn:aws:lambda:us-east-1:${account_id}:function:*"
+            ]
+        },
+        {
+            "Action": [
+                "lambda:GetFunction",
+                "lambda:UpdateFunctionCode"
+            ],
+            "Effect": "Allow",
+            "Resource": [
+                "arn:aws:lambda:us-east-1:${account_id}:function:${site_name}-origin-response",
+                "arn:aws:lambda:us-east-1:${account_id}:function:${site_name}-origin-response:*",
+                "arn:aws:lambda:us-east-1:${account_id}:function:${site_name}-staging-origin-response",
+                "arn:aws:lambda:us-east-1:${account_id}:function:${site_name}-staging-origin-response:*",
+                "arn:aws:lambda:us-east-1:${account_id}:function:${profile}-viewer-request",
+                "arn:aws:lambda:us-east-1:${account_id}:function:${profile}-viewer-request:*"
+            ]
+        }
+    ]
+}

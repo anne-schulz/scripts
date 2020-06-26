@@ -1,0 +1,140 @@
+{
+  "name": "vgv-berliner-aerzte-staging",
+  "roleArn": "arn:aws:iam::808055398147:role/service-role/AWSCodePipelineServiceRole",
+  "artifactStore": {
+    "type": "S3",
+    "location": "codepipeline-eu-central-1-214023207395"
+  },
+  "stages": [
+    {
+      "name": "Source",
+      "actions": [
+        {
+          "name": "Source",
+          "actionTypeId": {
+            "category": "Source",
+            "owner": "ThirdParty",
+            "provider": "GitHub",
+            "version": "1"
+          },
+          "runOrder": 1,
+          "configuration": {
+            "Branch": "feature/vw-baev/cloudfront",
+            "OAuthToken": "****",
+            "Owner": "infopark-customers",
+            "PollForSourceChanges": "false",
+            "Repo": "vgv-mbh"
+          },
+          "outputArtifacts": [
+            {
+              "name": "SourceArtifact"
+            }
+          ],
+          "inputArtifacts": [],
+          "region": "eu-central-1",
+          "namespace": "SourceVariables"
+        }
+      ]
+    },
+    {
+      "name": "Build",
+      "actions": [
+        {
+          "name": "Build",
+          "actionTypeId": {
+            "category": "Build",
+            "owner": "AWS",
+            "provider": "CodeBuild",
+            "version": "1"
+          },
+          "runOrder": 1,
+          "configuration": {
+            "EnvironmentVariables": "[{\"name\":\"CODE_PIPELINE_NAME\",\"value\":\"vgv-berliner-aerzte-staging\",\"type\":\"PLAINTEXT\"},{\"name\":\"CONTEXT\",\"value\":\"production\",\"type\":\"PLAINTEXT\"},{\"name\":\"SCRIVITO_TENANT\",\"value\":\"32d002a163404034654022d9059b74a5\",\"type\":\"PLAINTEXT\"},{\"name\":\"URL\",\"value\":\"https://vgv-berliner-aerzte-staging.infopark.io\",\"type\":\"PLAINTEXT\"}]",
+            "ProjectName": "vgv-berliner-aerzte-staging-Build"
+          },
+          "outputArtifacts": [
+            {
+              "name": "BuildArtifact"
+            }
+          ],
+          "inputArtifacts": [
+            {
+              "name": "SourceArtifact"
+            }
+          ],
+          "region": "eu-central-1",
+          "namespace": "BuildVariables"
+        },
+        {
+          "name": "Test-EsLint",
+          "actionTypeId": {
+            "category": "Build",
+            "owner": "AWS",
+            "provider": "CodeBuild",
+            "version": "1"
+          },
+          "runOrder": 1,
+          "configuration": {
+            "EnvironmentVariables": "[{\"name\":\"CODE_PIPELINE_NAME\",\"value\":\"vgv-berliner-aerzte-staging\",\"type\":\"PLAINTEXT\"},{\"name\":\"CONTEXT\",\"value\":\"production\",\"type\":\"PLAINTEXT\"},{\"name\":\"SCRIVITO_TENANT\",\"value\":\"32d002a163404034654022d9059b74a5\",\"type\":\"PLAINTEXT\"}]",
+            "ProjectName": "vgv-berliner-aerzte-staging-Test-EsLint"
+          },
+          "outputArtifacts": [],
+          "inputArtifacts": [
+            {
+              "name": "SourceArtifact"
+            }
+          ],
+          "region": "eu-central-1"
+        },
+        {
+          "name": "Test-EsCheck",
+          "actionTypeId": {
+            "category": "Build",
+            "owner": "AWS",
+            "provider": "CodeBuild",
+            "version": "1"
+          },
+          "runOrder": 1,
+          "configuration": {
+            "EnvironmentVariables": "[{\"name\":\"CODE_PIPELINE_NAME\",\"value\":\"vgv-berliner-aerzte-staging\",\"type\":\"PLAINTEXT\"},{\"name\":\"CONTEXT\",\"value\":\"production\",\"type\":\"PLAINTEXT\"},{\"name\":\"SCRIVITO_TENANT\",\"value\":\"32d002a163404034654022d9059b74a5\",\"type\":\"PLAINTEXT\"},{\"name\":\"URL\",\"value\":\"https://vgv-berliner-aerzte-staging.infopark.io\",\"type\":\"PLAINTEXT\"}]",
+            "ProjectName": "vgv-berliner-aerzte-staging-Test-EsCheck"
+          },
+          "outputArtifacts": [],
+          "inputArtifacts": [
+            {
+              "name": "SourceArtifact"
+            }
+          ],
+          "region": "eu-central-1"
+        }
+      ]
+    },
+    {
+      "name": "Deploy",
+      "actions": [
+        {
+          "name": "Deploy",
+          "actionTypeId": {
+            "category": "Build",
+            "owner": "AWS",
+            "provider": "CodeBuild",
+            "version": "1"
+          },
+          "runOrder": 1,
+          "configuration": {
+            "EnvironmentVariables": "[{\"name\":\"ACCOUNT_ID\",\"value\":\"808055398147\",\"type\":\"PLAINTEXT\"},{\"name\":\"CLOUD_FRONT_DISTRIBUTION_ID\",\"value\":\"ELNECFGNSWPN2\",\"type\":\"PLAINTEXT\"},{\"name\":\"CODE_PIPELINE_NAME\",\"value\":\"vgv-berliner-aerzte-staging\",\"type\":\"PLAINTEXT\"},{\"name\":\"CONTEXT\",\"value\":\"production\",\"type\":\"PLAINTEXT\"},{\"name\":\"ORIGIN_RESPONSE_NAME\",\"value\":\"vgv-berliner-aerzte-staging-origin-response\",\"type\":\"PLAINTEXT\"},{\"name\":\"S3_BUCKET\",\"value\":\"vgv-berliner-aerzte-staging\",\"type\":\"PLAINTEXT\"},{\"name\":\"SCRIVITO_TENANT\",\"value\":\"32d002a163404034654022d9059b74a5\",\"type\":\"PLAINTEXT\"},{\"name\":\"TRIGGER_CODE_PIPELINE_NAME\",\"value\":\"vgv-berliner-aerzte-staging-trigger-codepipeline\",\"type\":\"PLAINTEXT\"},{\"name\":\"URL\",\"value\":\"https://vgv-berliner-aerzte-staging.infopark.io\",\"type\":\"PLAINTEXT\"},{\"name\":\"BASIC_AUTH\",\"value\":\"vgv:!vw-baev.de!\",\"type\":\"PLAINTEXT\"}]",
+            "ProjectName": "vgv-berliner-aerzte-staging-Deploy"
+          },
+          "outputArtifacts": [],
+          "inputArtifacts": [
+            {
+              "name": "BuildArtifact"
+            }
+          ],
+          "region": "eu-central-1"
+        }
+      ]
+    }
+  ],
+  "version": 54
+}

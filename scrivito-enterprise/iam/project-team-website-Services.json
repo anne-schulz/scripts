@@ -1,0 +1,155 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ListBucket",
+      "Action": [
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::${site_name}",
+        "arn:aws:s3:::${site_name}-staging"
+      ],
+      "Effect": "Allow",
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "true"
+        }
+      }
+    },
+    {
+      "Sid": "ReadAndUpdateBucketContent",
+      "Action": [
+        "s3:GetObject",
+        "s3:DeleteObject",
+        "s3:PutObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::${site_name}/*",
+        "arn:aws:s3:::${site_name}-staging/*"
+      ],
+      "Effect": "Allow",
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "true"
+        }
+      }
+    },
+    {
+      "Sid": "ReadParameters",
+      "Effect": "Allow",
+      "Action": [
+        "ssm:DescribeParameters"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "GetParametersForCodePipeline",
+      "Effect": "Allow",
+      "Action": [
+        "ssm:GetParameter",
+        "ssm:GetParameters"
+      ],
+      "Resource": [
+        "arn:aws:ssm:${region}:${account_id}:parameter/${site_name}/*",
+        "arn:aws:ssm:${region}:${account_id}:parameter/${site_name}-staging/*"
+      ]
+    },
+    {
+      "Sid": "UpdateParametersForCodePipeline",
+      "Effect": "Allow",
+      "Action": [
+        "ssm:AddTagsToResource",
+        "ssm:ListTagsForResource",
+        "ssm:PutParameter"
+      ],
+      "Resource": [
+        "arn:aws:ssm:${region}:${account_id}:parameter/${site_name}/*",
+        "arn:aws:ssm:${region}:${account_id}:parameter/${site_name}-staging/*"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "kms:Decrypt"
+      ],
+      "Resource": "arn:aws:kms:${region}:${account_id}:alias/aws/ssm"
+    },
+    {
+      "Sid": "ListCFDs",
+      "Action": [
+        "cloudfront:Get*",
+        "cloudfront:List*"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+        "*"
+      ]
+    },
+    {
+      "Sid": "UpdateCFD",
+      "Action": [
+        "cloudfront:CreateInvalidation",
+        "cloudfront:UpdateDistribution"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+        "arn:aws:cloudfront::${account_id}:distribution/${CFD_ID}",
+        "arn:aws:cloudfront::${account_id}:distribution/${CFD_ID_STG}"
+      ]
+    },
+    {
+      "Sid": "EnableLambdaReplication",
+      "Action": [
+        "lambda:EnableReplication*"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+        "arn:aws:lambda:us-east-1:${account_id}:function:*"
+      ]
+    },
+    {
+      "Sid": "UpdateLambdaFunctions",
+      "Action": [
+        "lambda:AddPermission",
+        "lambda:CreateAlias",
+        "lambda:DeleteFunction",
+        "lambda:InvokeFunction",
+        "lambda:PublishVersion",
+        "lambda:RemovePermission",
+        "lambda:TagResource",
+        "lambda:Update*"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+        "arn:aws:lambda:${region}:${account_id}:function:${site_name}-*",
+        "arn:aws:lambda:us-east-1:${account_id}:function:${site_name}-*"
+      ]
+    },
+    {
+      "Sid": "ReadAPIGateways",
+      "Effect": "Allow",
+      "Action": [
+        "apigateway:GET"
+      ],
+      "Resource": [
+        "arn:aws:apigateway:*::/*"
+      ]
+    },
+    {
+      "Sid": "UpdateAPIGateway",
+      "Effect": "Allow",
+      "Action": [
+        "apigateway:DELETE",
+        "apigateway:HEAD",
+        "apigateway:OPTIONS",
+        "apigateway:PATCH",
+        "apigateway:POST",
+        "apigateway:PUT"
+      ],
+      "Resource": [
+        "arn:aws:apigateway:${region}::/restapis/${gateway_id}/*"
+      ]
+    }
+  ]
+}
